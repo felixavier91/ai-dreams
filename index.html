@@ -17,9 +17,11 @@
   html { scrollbar-width: none; }
   body::-webkit-scrollbar { display: none; }
   #feed { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: calc(56px + env(safe-area-inset-top)) 0 40px; }
-  .dream { position: relative; height: calc(100vh - 20px); max-height: 1100px; max-width: 96vw; display: flex; justify-content: center; }
-  .frame { position: relative; height: 100%; max-width: 100%; border-radius: 10px; overflow: hidden; background: #111; display: flex; align-items: center; }
-  .frame img, .frame video { max-height: 100%; max-width: 96vw; height: 100%; width: auto; object-fit: contain; display: block; opacity: 0; transition: opacity 1.2s; }
+  /* each card is exactly the size of its picture: as tall as the screen allows, or as wide as the screen allows on a
+     narrow phone, whichever comes first, so cards sit back to back with no empty band (--ar = width / height) */
+  .dream { position: relative; display: flex; justify-content: center; }
+  .frame { position: relative; --ar: 0.75; width: min(96vw, calc(min(100vh - 20px, 1100px) * var(--ar))); aspect-ratio: var(--ar); border-radius: 10px; overflow: hidden; background: #111; }
+  .frame img, .frame video { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; transition: opacity 1.2s; }
   .frame img.in, .frame video.in { opacity: 1; }
   .frame img.breathe { animation: breathe 28s ease-in-out infinite alternate; animation-play-state: paused; transform-origin: var(--ox, 50%) var(--oy, 50%); }
   .dream.near .frame img.breathe { animation-play-state: running; }
@@ -54,6 +56,7 @@ function card(d) {
     v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.disablePictureInPicture = true;
     if (d.image) v.poster = d.image;
     v.dataset.src = d.video;
+    v.addEventListener('loadedmetadata', () => { if (v.videoWidth) frame.style.setProperty('--ar', v.videoWidth / v.videoHeight); });
     frame.appendChild(v);
   } else {
     const r = hash(d.id), i = document.createElement('img');
@@ -66,7 +69,7 @@ function card(d) {
 }
 function hydrate(el) {
   if (el.dataset.ready) return; el.dataset.ready = 1;
-  el.querySelectorAll('[data-src]').forEach(m => { m.src = m.dataset.src; m.removeAttribute('data-src'); if (m.tagName === 'IMG') m.onload = () => m.classList.add('in'); else m.classList.add('in'); });
+  el.querySelectorAll('[data-src]').forEach(m => { m.src = m.dataset.src; m.removeAttribute('data-src'); if (m.tagName === 'IMG') m.onload = () => { if (m.naturalWidth) m.parentElement.style.setProperty('--ar', m.naturalWidth / m.naturalHeight); m.classList.add('in'); }; else m.classList.add('in'); });
 }
 // whatever is on or near the screen is loaded; its video runs, and rests again once it is far away
 const seen = new IntersectionObserver(es => es.forEach(e => {
