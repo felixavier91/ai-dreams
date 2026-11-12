@@ -23,13 +23,10 @@
   .frame { position: relative; --ar: 0.75; width: min(96vw, calc(min(100vh - 20px, 1100px) * var(--ar))); aspect-ratio: var(--ar); border-radius: 10px; overflow: hidden; background: #111; }
   .frame img, .frame video { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; transition: opacity 1.2s; }
   .frame img.in, .frame video.in { opacity: 1; }
-  .frame img.breathe { animation: breathe 28s ease-in-out infinite alternate; animation-play-state: paused; transform-origin: var(--ox, 50%) var(--oy, 50%); }
-  .dream.near .frame img.breathe { animation-play-state: running; }
-  @keyframes breathe { from { transform: scale(1); } to { transform: scale(1.1) translate(var(--dx, 0), var(--dy, 0)); } }
-  /* tap a dream: the prompt its picture model was given slides up over it; tap again and it goes */
+  /* tap a dream: the prompt its picture model was given covers the whole frame; tap again and it goes */
   .dream.has-prompt { cursor: pointer; }
-  .cap { position: absolute; left: 0; right: 0; bottom: 0; max-height: 70%; overflow-y: auto; padding: 44px 16px 16px; font-size: 14px; line-height: 1.45; color: #fff;
-         background: linear-gradient(transparent, rgba(0,0,0,.82) 44px); white-space: pre-wrap; opacity: 0; pointer-events: none; transition: opacity .35s; scrollbar-width: none; }
+  .cap { position: absolute; inset: 0; overflow-y: auto; padding: 22px 20px; font-size: 15px; line-height: 1.5; color: #fff; background: rgba(0,0,0,.84);
+         white-space: pre-wrap; opacity: 0; pointer-events: none; transition: opacity .35s; scrollbar-width: none; }
   .dream.show .cap { opacity: 1; pointer-events: auto; }
   body.still .dream.has-prompt { cursor: none; }
   #tint { position: fixed; inset: -10%; background-size: cover; background-position: center; filter: blur(70px) saturate(1.3); opacity: 0; transition: opacity 2s, background-image 1.5s; z-index: -1; }
@@ -66,9 +63,8 @@ function card(d) {
     v.addEventListener('loadedmetadata', () => { if (v.videoWidth) frame.style.setProperty('--ar', v.videoWidth / v.videoHeight); });
     frame.appendChild(v);
   } else {
-    const r = hash(d.id), i = document.createElement('img');
-    i.className = 'breathe'; i.alt = ''; i.dataset.src = d.image;
-    i.style.cssText = `--dx:${((r >>> 11) % 7 - 3) * 1.2}%;--dy:${((r >>> 14) % 7 - 3) * 1.2}%;--ox:${20 + (r >>> 17) % 60}%;--oy:${20 + (r >>> 20) % 60}%`;
+    const i = document.createElement('img');  // a still picture stays perfectly still
+    i.alt = ''; i.dataset.src = d.image;
     frame.appendChild(i);
   }
   if (d.prompt) {
