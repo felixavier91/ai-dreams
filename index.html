@@ -25,8 +25,8 @@
   .frame img.in, .frame video.in { opacity: 1; }
   /* tap a dream: the prompt its picture model was given covers the whole frame; tap again and it goes */
   .dream.has-prompt { cursor: pointer; }
-  .cap { position: absolute; inset: 0; overflow-y: auto; padding: 22px 20px; font-size: 15px; line-height: 1.5; color: #fff; background: rgba(0,0,0,.84);
-         white-space: pre-wrap; opacity: 0; pointer-events: none; transition: opacity .35s; scrollbar-width: none; }
+  .cap { position: absolute; inset: 0; overflow-y: auto; padding: 26px 24px; font-size: clamp(16px, 2.1vh, 20px); line-height: 1.6; color: #f2f2f2; background: rgba(0,0,0,.93);
+         font-family: Georgia, "Times New Roman", serif; white-space: pre-wrap; opacity: 0; pointer-events: none; transition: opacity .35s; scrollbar-width: none; }
   .dream.show .cap { opacity: 1; pointer-events: auto; }
   body.still .dream.has-prompt { cursor: none; }
   #tint { position: fixed; inset: -10%; background-size: cover; background-position: center; filter: blur(70px) saturate(1.3); opacity: 0; transition: opacity 2s, background-image 1.5s; z-index: -1; }
